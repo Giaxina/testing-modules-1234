@@ -357,27 +357,41 @@
 
   var episodesCache = {};
 
-  function seasonUrl(titleId, slug, num) {
-    return SITE + '/' + LOCALE + '/titles/' + titleId + (slug ? '-' + slug : '') + '/season-' + num;
+  function seasonUrl(titleId, slug, num, locale) {
+    return SITE + '/' + (locale || LOCALE) + '/titles/' + titleId + (slug ? '-' + slug : '') + '/season-' + num;
   }
 
   async function fetchSeason(titleId, slug, num, version, deadline) {
-    var url = seasonUrl(titleId, slug, num);
-    var headers = {
-      'User-Agent': UA,
-      'Accept': 'text/html, application/xhtml+xml',
-      'X-Inertia': 'true',
-      'X-Inertia-Version': version || '',
-      'X-Inertia-Partial-Data': 'loadedSeason,flash',
-      'X-Inertia-Partial-Component': 'Titles/Title',
-      'X-Requested-With': 'XMLHttpRequest',
-      'Referer': SITE + '/' + LOCALE + '/titles/' + titleId + '-' + (slug || 'x')
-    };
-    var res = await requestJson(url, headers, left(deadline, 8000));
-    if (res.status !== 200 || !res.data) throw new Error('season ' + num + ' HTTP ' + res.status);
-    var ls = res.data.props && res.data.props.loadedSeason;
-    if (!ls || !Array.isArray(ls.episodes)) throw new Error('season ' + num + ' episodes missing');
-    return ls;
+    /* Episode names are fetched from the Italian locale so they appear in
+     * Italian whenever the source carries an Italian translation (titles
+     * without one keep their original name). Episode ids/hrefs are identical
+     * in both locales; the English locale stays as fallback. */
+    var locales = ['it', LOCALE];
+    var lastError = null;
+    for (var li = 0; li < locales.length; li += 1) {
+      var locale = locales[li];
+      var url = seasonUrl(titleId, slug, num, locale);
+      var headers = {
+        'User-Agent': UA,
+        'Accept': 'text/html, application/xhtml+xml',
+        'X-Inertia': 'true',
+        'X-Inertia-Version': version || '',
+        'X-Inertia-Partial-Data': 'loadedSeason,flash',
+        'X-Inertia-Partial-Component': 'Titles/Title',
+        'X-Requested-With': 'XMLHttpRequest',
+        'Referer': SITE + '/' + locale + '/titles/' + titleId + '-' + (slug || 'x')
+      };
+      try {
+        var res = await requestJson(url, headers, left(deadline, 8000));
+        if (res.status !== 200 || !res.data) throw new Error('season ' + num + ' HTTP ' + res.status);
+        var ls = res.data.props && res.data.props.loadedSeason;
+        if (!ls || !Array.isArray(ls.episodes)) throw new Error('season ' + num + ' episodes missing');
+        return ls;
+      } catch (e) {
+        lastError = e;
+      }
+    }
+    throw lastError || new Error('season ' + num + ' unavailable');
   }
 
   function episodeEntry(titleId, ep, seasonNumber) {
@@ -423,13 +437,14 @@
         var sn = Number(seasons[s] && seasons[s].number);
         if (!isFinite(sn)) continue;
         known[sn] = true;
-        if (loadedSeason && Number(loadedSeason.number) === sn) jobs.push({ num: sn, season: loadedSeason });
-        else jobs.push({ num: sn, season: null });
+        /* Always fetch the season so episode names come from the Italian
+         * locale; the EN title page's loadedSeason is not reused. */
+        jobs.push({ num: sn, season: null });
       }
       if (loadedSeason && !known[Number(loadedSeason.number)]) {
-        jobs.push({ num: Number(loadedSeason.number) || 0, season: loadedSeason });
+        jobs.push({ num: Number(loadedSeason.number) || 0, season: null });
       }
-      if (!jobs.length && loadedSeason) jobs.push({ num: Number(loadedSeason.number) || 0, season: loadedSeason });
+      if (!jobs.length && loadedSeason) jobs.push({ num: Number(loadedSeason.number) || 0, season: null });
 
       var fetchJob = async function (job) {
         if (job.season) return job.season;
