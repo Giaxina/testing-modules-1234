@@ -142,7 +142,7 @@ const idSet = new Set(active.map(a => a.manifest.id));
 if (idSet.size !== active.length) throw new Error('Duplicate module id among active packages');
 active.sort((a, b) => a.file.localeCompare(b.file));
 
-const minAppVersion = m => (m.config && m.config.capabilities && m.config.capabilities.live_discovery_v1 === true) ? '9.0.0' : '8.5.33';
+const minAppVersion = m => (m.config && m.config.capabilities && m.config.capabilities.live_discovery_v1 === true) ? '9.0.0' : '8.0.0';
 
 const identity = active.map(a => a.manifest.id + ':' + a.manifest.moduleVersion + ':' + sha256(a.full)).join('|');
 const repoJsonPath = path.join(ROOT, 'repository.json');
@@ -152,7 +152,14 @@ if (previous && previous.testingIdentity === identity && previous.enabled === !!
   process.exit(0);
 }
 
-const bundleVersion = ((previous && previous.bundle && previous.bundle.version) || 0) + 1;
+let maxExistingBundle = 0;
+if (fs.existsSync(BUNDLES_DIR)) {
+  for (const f of fs.readdirSync(BUNDLES_DIR)) {
+    const m = f.match(new RegExp('^' + BUNDLE_PREFIX + '-(\\d+)\\.zip$'));
+    if (m) maxExistingBundle = Math.max(maxExistingBundle, Number(m[1]));
+  }
+}
+const bundleVersion = Math.max(((previous && previous.bundle && previous.bundle.version) || 0), maxExistingBundle) + 1;
 const publishedAtMs = Date.now();
 
 fs.mkdirSync(BUNDLES_DIR, { recursive: true });
@@ -172,8 +179,9 @@ function infoFor(relFile) {
 
 function docsNote(name, version) {
   const docsDir = path.join(ROOT, 'docs');
+  const prefix = String(name).replace(/[^A-Za-z0-9]/g, '') + '-' + version;
   if (fs.existsSync(docsDir)) {
-    const hit = fs.readdirSync(docsDir).find(f => f.startsWith(name + '-' + version) && f.endsWith('.md'));
+    const hit = fs.readdirSync(docsDir).find(f => f.startsWith(prefix) && f.endsWith('.md'));
     if (hit) return 'See docs/' + hit;
   }
   return 'See repository QA notes.';
@@ -194,7 +202,8 @@ const modules = active.map(({ file, manifest }) => {
     minAppVersion: minAppVersion(manifest),
     publishedAtMs,
     presentation: pres,
-    changelog: ['TEST CANDIDATE: not certified for stable release. ' + docsNote(manifest.name, manifest.moduleVersion)]
+    changelog: (Array.isArray(manifest.changelog) ? manifest.changelog : [])
+      .concat(['TEST CANDIDATE: not certified for stable release. ' + docsNote(manifest.name, manifest.moduleVersion)])
   };
 });
 
@@ -209,7 +218,7 @@ const repository = {
   bundle: {
     version: bundleVersion,
     ...infoFor('bundles/' + bundleFile),
-    minAppVersion: active.some(a => minAppVersion(a.manifest) === '9.0.0') ? '9.0.0' : '8.5.33'
+    minAppVersion: active.some(a => minAppVersion(a.manifest) === '9.0.0') ? '9.0.0' : '8.0.0'
   },
   modules
 };

@@ -17,21 +17,29 @@ Direct index (if your build asks for the index link):
 https://raw.githubusercontent.com/Giaxina/testing-modules-1234/main/repository.json
 ```
 
-You can also import a module ZIP directly (*Settings → Media & Sources → import*) from [`modules/`](modules/)
-— choose the module ZIP, not the extracted folder.
+You can also import a module ZIP directly (*Settings → Media & Sources → import*) — download the
+ZIP from [`modules/`](modules/) (e.g. `StreamingUnityHermes-1.0.0-beta.2.zip`) and choose that file,
+not the extracted folder and not the bundle.
 
 ## Current packages
 
-| Module | Type | Version | Identity |
-| --- | --- | --- | --- |
-| StreamingUnity (`streamingunity-v1`) | video | `1.0.0-beta.1` | `PENDING-OWNER-ALLOCATION` (dev) |
+| Module | Type | Module ID | Version | Identity number |
+| --- | --- | --- | --- | ---: |
+| StreamingUnity Hermes | video | `streamingunity-hermes-v1` | `1.0.0-beta.2` | 9004 |
 
 The machine-readable index is [`repository.json`](repository.json) (schemaVersion 1, with per-package
 `packageUrl` + `sha256`). `retired-packages.json` lists retired ZIP file names (kept on disk, not
 offered as installable).
 
-> Testing candidates are not certified for stable release. Expect beta-grade behaviour; read the QA
-> report for this package under [`docs/`](docs/).
+> **Identity + trust notes.** Identity number `9004` is a test-only compatibility identity, not an
+> official catalogue allocation. The index is unsigned (empty signature fields), so the app installs
+> this as a *community repository*: usable, but not marked trusted. This repository is not the
+> official catalogue and does not claim maintainer approval.
+>
+> The beta.1 package (development identity `0`) failed repository install with
+> `No repository modules were installed` — Player requires a positive identity number. beta.2
+> renames the module to avoid the official `streamingunity-v1` (SP-VID-065) and ships identity
+> `9004`. Read [`docs/`](docs/) for the reports.
 
 ## Layout
 
@@ -48,7 +56,7 @@ tools/build.cjs          rebuilds repository.json + bundle (node tools/build.cjs
 ## Update policy
 
 - Every change bumps `moduleVersion`; old ZIPs are **retired, not deleted** (add the file name to
-  `retired-packages.json`).
+  `retired-packages.json`). Never modify an already published version's bytes.
 - Every package carries a SHA-256 (sibling `.sha256` file and inside `repository.json`); verify after download.
 - Rebuild the index with `node tools/build.cjs`, then commit and push. Old bundle ZIPs stay so cached
   indexes never hit a 404.

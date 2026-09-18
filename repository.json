@@ -3,33 +3,33 @@
   "repositoryId": "testing-modules-1234",
   "name": "Testing Modules 1234",
   "enabled": true,
-  "publishedAtMs": 1789760624721,
+  "publishedAtMs": 1789761731090,
   "signature": "",
-  "testingIdentity": "streamingunity-v1:1.0.0-beta.1:0c9d0297e619b22d9e2d4f5991a46f859c96b8e8aa45254693188e2b671476e6",
+  "testingIdentity": "streamingunity-hermes-v1:1.0.0-beta.2:567fcc5b23cbf08a5f6f8a0659cd91913cf62cdbdbd2c5d10eb2200aa4d36bd8",
   "bundle": {
-    "version": 1,
-    "packageUrl": "https://raw.githubusercontent.com/Giaxina/testing-modules-1234/main/bundles/Testing-1.zip",
-    "packagePath": "/Giaxina/testing-modules-1234/main/bundles/Testing-1.zip",
-    "sha256": "136599e4fc5f9fe8a360179a3eda179a0b219cc792e3b6579e69b4c27ad8d6f6",
+    "version": 4,
+    "packageUrl": "https://raw.githubusercontent.com/Giaxina/testing-modules-1234/main/bundles/Testing-4.zip",
+    "packagePath": "/Giaxina/testing-modules-1234/main/bundles/Testing-4.zip",
+    "sha256": "9bbab7f8d02cf025f0e2fc02707a31ad5c0068c08b5d5ad876d7eb3ba5339daa",
     "signature": "",
-    "minAppVersion": "8.5.33"
+    "minAppVersion": "8.0.0"
   },
   "modules": [
     {
-      "moduleId": "streamingunity-v1",
-      "moduleFamilyId": "streamingunity_v1",
-      "moduleIdentity": "PENDING-OWNER-ALLOCATION",
-      "moduleIdentityNumber": 0,
+      "moduleId": "streamingunity-hermes-v1",
+      "moduleFamilyId": "streamingunity_hermes_v1",
+      "moduleIdentity": "SP-VID-9004-STREAMINGUNITY-HERMES-TEST",
+      "moduleIdentityNumber": 9004,
       "contentType": "video",
-      "version": "1.0.0-beta.1",
-      "packageUrl": "https://raw.githubusercontent.com/Giaxina/testing-modules-1234/main/modules/StreamingUnity-1.0.0-beta.1.zip",
-      "packagePath": "/Giaxina/testing-modules-1234/main/modules/StreamingUnity-1.0.0-beta.1.zip",
-      "sha256": "0c9d0297e619b22d9e2d4f5991a46f859c96b8e8aa45254693188e2b671476e6",
+      "version": "1.0.0-beta.2",
+      "packageUrl": "https://raw.githubusercontent.com/Giaxina/testing-modules-1234/main/modules/StreamingUnityHermes-1.0.0-beta.2.zip",
+      "packagePath": "/Giaxina/testing-modules-1234/main/modules/StreamingUnityHermes-1.0.0-beta.2.zip",
+      "sha256": "567fcc5b23cbf08a5f6f8a0659cd91913cf62cdbdbd2c5d10eb2200aa4d36bd8",
       "signature": "",
-      "minAppVersion": "8.5.33",
-      "publishedAtMs": 1789760624721,
+      "minAppVersion": "8.0.0",
+      "publishedAtMs": 1789761731090,
       "presentation": {
-        "category": "Movies",
+        "category": "Movies & TV",
         "purpose": "Testing only",
         "recommended": false,
         "language": "English",
@@ -40,7 +40,8 @@
         "iconUrl": "https://streamingunity.win/apple-touch-icon.png?v=2"
       },
       "changelog": [
-        "TEST CANDIDATE: not certified for stable release. See docs/StreamingUnity-1.0.0-beta.1-report.md"
+        "Repository import repair in beta.2: community test identity SP-VID-9004-STREAMINGUNITY-HERMES-TEST added (beta.1 shipped development identity 0, which Player rejects during repository install)",
+        "TEST CANDIDATE: not certified for stable release. See docs/StreamingUnityHermes-1.0.0-beta.2-report.md"
       ]
     }
   ]
