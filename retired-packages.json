@@ -1,0 +1,5 @@
+{
+  "schema": "synthetiq-testing-repository/1",
+  "note": "Retired package versions are kept for rollback; they are not offered as current.",
+  "packages": []
+}
