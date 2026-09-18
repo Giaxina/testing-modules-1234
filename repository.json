@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "repositoryId": "testing-modules-1234",
+  "name": "Testing Modules 1234",
+  "enabled": true,
+  "publishedAtMs": 1789760624721,
+  "signature": "",
+  "testingIdentity": "streamingunity-v1:1.0.0-beta.1:0c9d0297e619b22d9e2d4f5991a46f859c96b8e8aa45254693188e2b671476e6",
+  "bundle": {
+    "version": 1,
+    "packageUrl": "https://raw.githubusercontent.com/Giaxina/testing-modules-1234/main/bundles/Testing-1.zip",
+    "packagePath": "/Giaxina/testing-modules-1234/main/bundles/Testing-1.zip",
+    "sha256": "136599e4fc5f9fe8a360179a3eda179a0b219cc792e3b6579e69b4c27ad8d6f6",
+    "signature": "",
+    "minAppVersion": "8.5.33"
+  },
+  "modules": [
+    {
+      "moduleId": "streamingunity-v1",
+      "moduleFamilyId": "streamingunity_v1",
+      "moduleIdentity": "PENDING-OWNER-ALLOCATION",
+      "moduleIdentityNumber": 0,
+      "contentType": "video",
+      "version": "1.0.0-beta.1",
+      "packageUrl": "https://raw.githubusercontent.com/Giaxina/testing-modules-1234/main/modules/StreamingUnity-1.0.0-beta.1.zip",
+      "packagePath": "/Giaxina/testing-modules-1234/main/modules/StreamingUnity-1.0.0-beta.1.zip",
+      "sha256": "0c9d0297e619b22d9e2d4f5991a46f859c96b8e8aa45254693188e2b671476e6",
+      "signature": "",
+      "minAppVersion": "8.5.33",
+      "publishedAtMs": 1789760624721,
+      "presentation": {
+        "category": "Movies",
+        "purpose": "Testing only",
+        "recommended": false,
+        "language": "English",
+        "languages": [
+          "sub",
+          "dub"
+        ],
+        "iconUrl": "https://streamingunity.win/apple-touch-icon.png?v=2"
+      },
+      "changelog": [
+        "TEST CANDIDATE: not certified for stable release. See docs/StreamingUnity-1.0.0-beta.1-report.md"
+      ]
+    }
+  ]
+}
