@@ -746,32 +746,54 @@
     if (italianFirst && seenLang.it) {
       orderedLangs = ['it'].concat(orderedLangs.filter(function (x) { return x !== 'it'; }));
     }
-    var firstLang = orderedLangs.length ? orderedLangs[0] : 'und';
-    var secondLang = '';
-    for (var o = 1; o < orderedLangs.length; o += 1) {
-      if (orderedLangs[o] !== firstLang) { secondLang = orderedLangs[o]; break; }
-    }
 
-    var primaryMaster = master;
-    var primaryLang = firstLang;
-    if (firstLang !== (chain.embedLang || LOCALE) && firstLang !== primaryAudio) {
-      try {
-        var altMaster = await fetchMaster(chain, firstLang, deadline);
-        primaryMaster = altMaster;
-        primaryLang = firstLang;
-      } catch (_) {
-        primaryMaster = master;
-        primaryLang = primaryAudio;
+    /* Wanted audio: 'dub' -> Italian, 'sub' -> the original, which is the first
+     * non-Italian rendition this master actually offers (en/fr/ko/...). */
+    var nonItalian = '';
+    for (var a3 = 0; a3 < orderedLangs.length; a3 += 1) {
+      if (orderedLangs[a3] !== 'it') { nonItalian = orderedLangs[a3]; break; }
+    }
+    var prefLang = italianFirst ? (seenLang.it ? 'it' : primaryAudio) : (nonItalian || primaryAudio);
+
+    var defaultLangOf = function (m) {
+      var def = 'und';
+      for (var d = 0; d < m.audio.length; d += 1) {
+        if (m.audio[d].isDefault) { def = shortLang(m.audio[d].language); break; }
       }
+      if (def === 'und' && m.audio.length) def = shortLang(m.audio[0].language);
+      return def;
+    };
+
+    /* Switch the playlist's default rendition to the wanted language. The
+     * embed's own `lang` param is only the starting point: for guests it can
+     * point at the Italian dub, which used to leak into 'sub' playback. */
+    var primaryMaster = master;
+    var primaryLang = primaryAudio;
+    if (prefLang && prefLang !== primaryAudio) {
+      try {
+        var altMaster = await fetchMaster(chain, prefLang, deadline);
+        if (defaultLangOf(parseMaster(altMaster.text)) === prefLang) {
+          primaryMaster = altMaster;
+          primaryLang = prefLang;
+        }
+      } catch (_) { /* keep the embed-language master */ }
     }
 
+    /* The other language stays available as a second switchable stream. */
     var extraMaster = null;
     var extraLang = '';
-    if (secondLang && secondLang !== primaryLang && now() < deadline - 3000) {
-      try {
-        extraMaster = await fetchMaster(chain, secondLang, deadline);
-        extraLang = secondLang;
-      } catch (_) { extraMaster = null; }
+    if (now() < deadline - 3000) {
+      for (var a4 = 0; a4 < orderedLangs.length; a4 += 1) {
+        if (orderedLangs[a4] === primaryLang) continue;
+        try {
+          var extraTry = await fetchMaster(chain, orderedLangs[a4], deadline);
+          if (defaultLangOf(parseMaster(extraTry.text)) === orderedLangs[a4]) {
+            extraMaster = extraTry;
+            extraLang = orderedLangs[a4];
+          }
+        } catch (_) { extraMaster = null; }
+        break;
+      }
     }
 
     function langNameFor(code) {
@@ -779,6 +801,14 @@
         if (shortLang(parsed.audio[i2].language) === code && parsed.audio[i2].name) return parsed.audio[i2].name;
       }
       return langLabel(code);
+    }
+
+    /* The app routes the Sub/Dub choice by stream label (module contract: the
+     * labels should contain 'sub'/'dub'), so every pair carries the token that
+     * matches the audio it actually plays, plus the readable language name. */
+    function streamLabel(langCode) {
+      var token = langCode === 'it' ? 'dub' : (langCode === 'und' ? (italianFirst ? 'dub' : 'sub') : 'sub');
+      return token + ' ' + langNameFor(langCode);
     }
 
     var qualities = [{ label: 'Auto', url: primaryMaster.url, headers: headers }];
@@ -792,7 +822,7 @@
       });
     }
 
-    var primaryLabel = langNameFor(primaryLang);
+    var primaryLabel = streamLabel(primaryLang);
     var streamPairs = [primaryLabel, primaryMaster.url];
     var serverRows = [{
       name: primaryLabel,
@@ -800,13 +830,13 @@
       url: primaryMaster.url,
       headers: headers,
       streamType: 'hls',
-      lang: requestLang,
+      lang: primaryLang === 'it' ? 'dub' : 'sub',
       audioLanguage: primaryLang,
       subtitles: subs,
       qualities: qualities.slice(1)
     }];
     if (extraMaster) {
-      var extraLabel = langNameFor(extraLang);
+      var extraLabel = streamLabel(extraLang);
       streamPairs.push(extraLabel, extraMaster.url);
       serverRows.push({
         name: extraLabel,
@@ -814,7 +844,7 @@
         url: extraMaster.url,
         headers: headers,
         streamType: 'hls',
-        lang: requestLang,
+        lang: extraLang === 'it' ? 'dub' : 'sub',
         audioLanguage: extraLang,
         subtitles: subs
       });
