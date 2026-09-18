@@ -867,9 +867,9 @@
     var tv = cardsFrom(slidersFrom(tvPage, 'trending'), false);
 
     var used = {};
-    var dedupe = function (list) {
+    var dedupe = function (list, cap) {
       var out = [];
-      for (var i = 0; i < list.length; i += 1) {
+      for (var i = 0; i < list.length && out.length < cap; i += 1) {
         var key = String(list[i].href || '').trim();
         if (!key || used[key]) continue;
         used[key] = true;
@@ -878,21 +878,29 @@
       return out;
     };
 
+    /* Reserve the ranked Top-10 items first so that row keeps its exact ten
+     * after the app's cross-section dedupe; the hero row is then filtered
+     * against the reservation, so no section loses items. Sections are emitted
+     * with the hero (Trending) row first and the Top 10 row second. */
+    var top10Items = dedupe(top10, 10);
+    var trendingItems = dedupe(trending, 8);
+    var latestItems = dedupe(latest, 30);
+    var moviesItems = dedupe(movies, 30);
+    var tvItems = dedupe(tv, 30);
+
     var sections = [];
-    var push = function (id, title, style, items, cap, feedId) {
-      var picked = dedupe(items).slice(0, cap);
-      if (!picked.length) return;
-      var section = { id: id, title: title, style: style, items: picked };
+    var push = function (id, title, style, items, feedId) {
+      if (!items.length) return;
+      var section = { id: id, title: title, style: style, items: items };
       if (feedId) section.viewAll = { mode: 'feed', feedId: feedId };
       sections.push(section);
     };
 
-    /* top10 first so its ten ranked items survive cross-section dedupe intact. */
-    push('top10', 'Top 10 Today', 'top10', top10, 10, 'top10');
-    push('trending', 'Trending Now', 'hero', trending, 8, 'trending');
-    push('latest', 'Recently Added', 'poster', latest, 30, 'latest');
-    push('movies', 'Movies', 'poster', movies, 30, 'movies');
-    push('tv', 'TV Shows', 'poster', tv, 30, 'tv');
+    push('trending', 'Trending Now', 'hero', trendingItems, 'trending');
+    push('top10', 'Top 10 Today', 'top10', top10Items, 'top10');
+    push('latest', 'Recently Added', 'poster', latestItems, 'latest');
+    push('movies', 'Movies', 'poster', moviesItems, 'movies');
+    push('tv', 'TV Shows', 'poster', tvItems, 'tv');
 
     return { sections: sections };
   }
