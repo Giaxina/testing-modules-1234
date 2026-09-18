@@ -3,14 +3,14 @@
   "repositoryId": "testing-modules-1234",
   "name": "Testing Modules 1234",
   "enabled": true,
-  "publishedAtMs": 1789762619594,
+  "publishedAtMs": 1789763491209,
   "signature": "",
-  "testingIdentity": "streamingunity-hermes-v1:1.0.0-beta.3:ddd07965bc4d841f35699a81a221b88a00233fafcf088b36a37f5904186e80f3",
+  "testingIdentity": "streamingunity-hermes-v1:1.0.0-beta.4:1311673eec5f06ad86e12ea3db2d2846ba548925b99f38240309a13ac119ec2c",
   "bundle": {
-    "version": 5,
-    "packageUrl": "https://raw.githubusercontent.com/Giaxina/testing-modules-1234/main/bundles/Testing-5.zip",
-    "packagePath": "/Giaxina/testing-modules-1234/main/bundles/Testing-5.zip",
-    "sha256": "10571a47d6b0389714e9e4ca6a6e61e5acff1654ee9fe798888411f18cd58a49",
+    "version": 6,
+    "packageUrl": "https://raw.githubusercontent.com/Giaxina/testing-modules-1234/main/bundles/Testing-6.zip",
+    "packagePath": "/Giaxina/testing-modules-1234/main/bundles/Testing-6.zip",
+    "sha256": "25d223b48bf5c0f186d869edc809244ef74262620b18f14c5b9e1cc202fa1935",
     "signature": "",
     "minAppVersion": "8.0.0"
   },
@@ -21,13 +21,13 @@
       "moduleIdentity": "SP-VID-9004-STREAMINGUNITY-HERMES-TEST",
       "moduleIdentityNumber": 9004,
       "contentType": "video",
-      "version": "1.0.0-beta.3",
-      "packageUrl": "https://raw.githubusercontent.com/Giaxina/testing-modules-1234/main/modules/StreamingUnityHermes-1.0.0-beta.3.zip",
-      "packagePath": "/Giaxina/testing-modules-1234/main/modules/StreamingUnityHermes-1.0.0-beta.3.zip",
-      "sha256": "ddd07965bc4d841f35699a81a221b88a00233fafcf088b36a37f5904186e80f3",
+      "version": "1.0.0-beta.4",
+      "packageUrl": "https://raw.githubusercontent.com/Giaxina/testing-modules-1234/main/modules/StreamingUnityHermes-1.0.0-beta.4.zip",
+      "packagePath": "/Giaxina/testing-modules-1234/main/modules/StreamingUnityHermes-1.0.0-beta.4.zip",
+      "sha256": "1311673eec5f06ad86e12ea3db2d2846ba548925b99f38240309a13ac119ec2c",
       "signature": "",
       "minAppVersion": "8.0.0",
-      "publishedAtMs": 1789762619594,
+      "publishedAtMs": 1789763491209,
       "presentation": {
         "category": "Movies & TV",
         "purpose": "Testing only",
@@ -40,9 +40,10 @@
         "iconUrl": "https://streamingunity.win/apple-touch-icon.png?v=2"
       },
       "changelog": [
+        "TV Shows and Movies grids now page through the source's own infinite-scroll JSON endpoint (60 per source page, type-filtered) - previously they stopped after the first 30 items",
         "Discovery home: Trending hero row now first; the Top-10 row reserves its ten ranked items before the hero so both rows keep full counts (beta.2 had Top 10 above Trending)",
         "Repository import repair in beta.2: community test identity SP-VID-9004-STREAMINGUNITY-HERMES-TEST added (beta.1 shipped development identity 0, which Player rejects during repository install)",
-        "TEST CANDIDATE: not certified for stable release. See docs/StreamingUnityHermes-1.0.0-beta.3-report.md"
+        "TEST CANDIDATE: not certified for stable release. See docs/StreamingUnityHermes-1.0.0-beta.4-report.md"
       ]
     }
   ]

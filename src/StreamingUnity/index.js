@@ -33,6 +33,12 @@
     'Accept-Language': 'en-US,en;q=0.9'
   };
 
+  var JSON_HEADERS = {
+    'User-Agent': UA,
+    'Accept': 'application/json, text/plain, */*',
+    'Accept-Language': 'en-US,en;q=0.9'
+  };
+
   function now() { return Date.now(); }
   function left(deadline, cap) { return Math.max(800, Math.min(deadline - now(), cap || 12000)); }
   function log() { try { if (typeof console !== 'undefined' && console.warn) console.warn.apply(console, arguments); } catch (_) {} }
@@ -909,6 +915,29 @@
     var deadline = now() + 9500;
     var feed = String(feedId == null ? '' : feedId).trim().toLowerCase();
     var pageNum = Math.max(1, Number(page) || 1);
+
+    /* Paged catalogue feeds: mirror the site's own infinite-scroll endpoint.
+     * GET /en/browse/<trending|latest>?lang=en&page=N[&type=tv|movie] answers
+     * JSON {name,label,titles:[..]} with 60 items per page (verified pages
+     * 1..3 disjoint). The site's own player stops paging when a page returns
+     * fewer than 60 items, so hasMore mirrors that exact rule. */
+    if (feed === 'trending' || feed === 'latest' || feed === 'movies' || feed === 'tv') {
+      var listName = feed === 'latest' ? 'latest' : 'trending';
+      var typeParam = feed === 'movies' ? '&type=movie' : (feed === 'tv' ? '&type=tv' : '');
+      var jsonUrl = SITE + '/' + LOCALE + '/browse/' + listName + '?lang=' + encodeURIComponent(LOCALE) + '&page=' + pageNum + typeParam;
+      try {
+        var jr = await requestText(jsonUrl, JSON_HEADERS, left(deadline, 8000));
+        if (jr.status === 200) {
+          var payload = null;
+          try { payload = JSON.parse(jr.text); } catch (_parse) { payload = null; }
+          var rawArr = payload && (Array.isArray(payload.titles) ? payload.titles : (Array.isArray(payload.data) ? payload.data : null));
+          if (rawArr) {
+            var jitems = cardsFrom(rawArr);
+            return { items: jitems.slice(0, 50), page: pageNum, hasMore: rawArr.length >= 60 };
+          }
+        }
+      } catch (_json) { /* fall back to the HTML page below */ }
+    }
 
     if (feed === 'trending' || feed === 'latest') {
       var res = await requestText(SITE + '/' + LOCALE + '/browse/' + feed + '?page=' + pageNum, HTML_HEADERS, left(deadline, 9000));

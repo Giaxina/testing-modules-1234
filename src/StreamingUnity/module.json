@@ -3,7 +3,7 @@
   "name": "StreamingUnity Hermes",
   "contentType": "video",
   "contractVersion": 4,
-  "moduleVersion": "1.0.0-beta.3",
+  "moduleVersion": "1.0.0-beta.4",
   "description": "Movies and TV series from streamingunity.win (English interface): search, full season and episode lists, HLS playback with per-language audio tracks and subtitle tracks (Hermes test variant).",
   "moduleFamilyId": "streamingunity_hermes_v1",
   "moduleIdentity": "SP-VID-9004-STREAMINGUNITY-HERMES-TEST",
@@ -11,6 +11,7 @@
   "releaseTrack": "beta",
   "moduleStatus": "trial",
   "changelog": [
+    "TV Shows and Movies grids now page through the source's own infinite-scroll JSON endpoint (60 per source page, type-filtered) - previously they stopped after the first 30 items",
     "Discovery home: Trending hero row now first; the Top-10 row reserves its ten ranked items before the hero so both rows keep full counts (beta.2 had Top 10 above Trending)",
     "Repository import repair in beta.2: community test identity SP-VID-9004-STREAMINGUNITY-HERMES-TEST added (beta.1 shipped development identity 0, which Player rejects during repository install)"
   ],
